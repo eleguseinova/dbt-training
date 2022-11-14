@@ -1,4 +1,5 @@
 select 
+{{ dbt_utils.surrogate_key(['o.ORDERID', 'c.CUSTOMERID', 'p.PRODUCTID']) }} as sk_orders,
 o.ORDERID,
 o.ORDERDATE,
 o.SHIPDATE,
@@ -13,9 +14,12 @@ c.CUSTOMERID,
 p.CATEGORY,
 p.PRODUCTID,
 p.PRODUCTNAME,
-p.SUBCATEGORY
+p.SUBCATEGORY,
+d.delivery_team
 from {{ ref('raw_orders') }} as o
 left join {{ ref('raw_customer') }} as c
 on o.CUSTOMERID = c.CUSTOMERID
 left join {{ ref('raw_products') }} as p
 on o.PRODUCTID = p.PRODUCTID
+left join {{ ref('delivery_team') }} as d
+on o.SHIPMODE = d.SHIPMODE
